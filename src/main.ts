@@ -1,10 +1,7 @@
 import keypress from 'keypress'
-import {
-    hideCursor,
-    showCursor,
-    tableMenu,
-    computeTableLayout
-} from 'node-terminal-menu'
+import chalk from 'chalk'
+
+import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
 
 function listenKeyboard(kbHandler) {
     process.stdin.setRawMode(true)
@@ -24,25 +21,40 @@ function menuDone(selection) {
 
 let items = []
 
+function initItems(rows) {
+    let result = []
+    for (let row = 1; row <= rows; row++) result.push(`Item ${row}`)
+    return result
+}
+
 function main() {
-    let loremIpsum =
-        'Lorem ipsum dolor sit amet ' +
-        'consectetur adipiscing elit sed do eiusmod ' +
-        'tempor incididunt ut labore et dolore magna aliqua ' +
-        '\x1b[1mlong/bright/option\x1b[m ' +
-        'potato'
-    items = loremIpsum.split(' ')
-    let { columns, columnWidth } = computeTableLayout(items)
+    items = initItems(100)
     hideCursor()
-    let menuKeyHandler = tableMenu({
+    let menu = tableMenu({
         items,
-        columns,
-        columnWidth,
-        // columns: 3,
-        // columnWidth: 12,
-        done: menuDone
-    }).keyHandler
-    listenKeyboard(menuKeyHandler)
+        height: 20,
+        columns: 1,
+        columnWidth: 40,
+        scrollBarCol: 41,
+        done: menuDone,
+        colors: {
+            item: chalk.bgBlue,
+            scrollArea: chalk.bgBlue,
+            scrollBar: chalk.yellowBright.bgBlue,
+            desc: chalk.white.bgMagenta
+        }
+    })
+    listenKeyboard((ch, key) => {
+        if (ch == 'u') {
+            // Convert items to uppercase
+            items = items.map(i => i.toUpperCase())
+            menu.update({ items })
+        } else if (ch == 'd') {
+            // Delete selected item
+            items.splice(menu.selection, 1)
+            menu.update({ items })
+        } else menu.keyHandler(ch, key)
+    })
 }
 
 main()
