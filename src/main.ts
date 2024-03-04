@@ -1,21 +1,34 @@
 import robot from 'robotjs'
-import { registerHotkey } from './hotkey'
+import { Hotkey, registerHotkey } from './hotkey'
 import { showHistoryMenu } from './history'
+import { windowManager } from 'node-window-manager'
 
-function registerHotKeys(command: string) {
-    registerHotkey({
-        key: 'PAGE UP',
+const TYPE_INITIAL_WAIT = 100
+
+function makeWarpHotkey(keyName: string, command: string): Hotkey {
+    return {
+        key: keyName,
         modifiers: ['LEFT CTRL'],
-        callback: () => robot.typeString('ToDo history')
-    })
-    registerHotkey({
-        key: 'PAGE DOWN',
-        modifiers: ['LEFT CTRL'],
-        callback: () => robot.typeString('ToDo dirHistory')
-    })
+        triggerOnKeyUp: true,
+        callback: () => {
+            let winTitle = windowManager.getActiveWindow().getTitle()
+            if (winTitle != 'Warp') return
+            setTimeout(() => {
+                console.log({ command })
+                robot.typeString(command)
+                robot.keyTap('enter')
+            }, TYPE_INITIAL_WAIT)
+        }
+    }
+}
+
+function registerHotkeys(command: string) {
+    registerHotkey(makeWarpHotkey('PAGE UP', 'ToDo history'))
+    registerHotkey(makeWarpHotkey('PAGE DOWN', 'ToDo dirHistory'))
 }
 
 async function main() {
+    robot.setKeyboardDelay(10)
     switch (process.argv[process.argv.length - 1]) {
         case 'history':
             showHistoryMenu()
@@ -24,7 +37,7 @@ async function main() {
             console.log('ToDo: dir history')
             break
         default:
-            registerHotKeys(process.argv.join(' '))
+            registerHotkeys(process.argv.join(' '))
     }
 }
 

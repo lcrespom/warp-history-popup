@@ -1,8 +1,7 @@
-import { GlobalKeyboardListener, IGlobalKeyListener } from 'node-global-key-listener'
+import { GlobalKeyboardListener } from 'node-global-key-listener'
 import { IGlobalKeyEvent, IGlobalKeyDownMap } from 'node-global-key-listener'
-import { windowManager } from 'node-window-manager'
 
-type Modifier =
+export type Modifier =
     | 'LEFT META'
     | 'RIGHT META'
     | 'LEFT CTRL'
@@ -16,15 +15,19 @@ type Modifier =
     | 'SCROLL LOCK'
     | 'FN'
 
-type Hotkey = {
+export type Hotkey = {
     key: string
     modifiers: Modifier[]
     callback?: () => void
     repeatOK?: boolean
+    triggerOnKeyUp?: boolean
     alreadyPressed?: boolean // Used in runtime
 }
 
+type HotkeyCallback = () => void
+
 let hotkeys: Hotkey[] = []
+let pendingCallbacks: HotkeyCallback[] = []
 
 function isHotkey(hotkey: Hotkey, key: IGlobalKeyEvent, down: IGlobalKeyDownMap) {
     if (key.name != hotkey.key) return false
@@ -32,17 +35,31 @@ function isHotkey(hotkey: Hotkey, key: IGlobalKeyEvent, down: IGlobalKeyDownMap)
         if (!down[modifier]) return false
     }
     if (key.state == 'UP') {
+        if (hotkey.triggerOnKeyUp) {
+            pendingCallbacks.push(hotkey.callback)
+            return false
+        }
         hotkey.alreadyPressed = false
         return false
     }
+    if (hotkey.triggerOnKeyUp) return false
     if (!hotkey.repeatOK && hotkey.alreadyPressed) return false
-    let winTitle = windowManager.getActiveWindow().getTitle()
-    if (winTitle != 'Warp') return
     hotkey.alreadyPressed = true
     return true
 }
 
+function allKeysUp(key: IGlobalKeyEvent, down: IGlobalKeyDownMap): boolean {
+    if (key.state != 'UP') return false
+    for (let k of Object.keys(down)) if (down[k]) return false
+    return true
+}
+
 function checkHotkeys(key: IGlobalKeyEvent, down: IGlobalKeyDownMap) {
+    if (allKeysUp(key, down)) {
+        for (let cb of pendingCallbacks) cb()
+        pendingCallbacks = []
+        return
+    }
     for (let hotkey of hotkeys) {
         if (isHotkey(hotkey, key, down)) hotkey.callback()
     }
