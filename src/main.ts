@@ -20,14 +20,21 @@ function menuDone(selection, items) {
     process.exit(0)
 }
 
+function parseHistory(stdout) {
+    return stdout.split('\n').filter(l => l.trim().length > 0)
+}
+
 async function initItems(): Promise<string[]> {
     let items = []
     return new Promise((resolve, reject) => {
-        exec('ls', { shell: '/bin/zsh' }, (err, stdout, stderr) => {
-            console.log({ err, stdout, stderr })
-            if (err) reject(err)
-            else resolve(stdout.split('\n').filter(l => l.trim().length > 0))
-        })
+        exec(
+            'tail -50 ~/.zsh_history',
+            { shell: '/bin/zsh' },
+            (err, stdout) => {
+                if (err) reject(err)
+                else resolve(parseHistory(stdout))
+            }
+        )
     })
 }
 
