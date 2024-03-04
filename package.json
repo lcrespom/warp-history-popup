@@ -1,0 +1,29 @@
+{
+    "name": "history",
+    "version": "1.0.0",
+    "description": "Terminal history management",
+    "main": "index.js",
+    "scripts": {
+        "start": "esno src/main.ts",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "Luis Crespo",
+    "license": "ISC",
+    "prettier": {
+        "useTabs": false,
+        "tabWidth": 4,
+        "semi": false,
+        "singleQuote": true,
+        "arrowParens": "avoid",
+        "trailingComma": "none"
+    },
+    "dependencies": {
+        "esno": "^4.7.0",
+        "keypress": "^0.2.1",
+        "node-terminal-menu": "^3.4.1"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.24"
+    }
+}
