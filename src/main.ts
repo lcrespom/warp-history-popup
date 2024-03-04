@@ -31,7 +31,6 @@ function parseHistory(stdout) {
 }
 
 async function initItems(): Promise<string[]> {
-    let items = []
     return new Promise((resolve, reject) => {
         exec(
             'tail -50 ~/.zsh_history',
