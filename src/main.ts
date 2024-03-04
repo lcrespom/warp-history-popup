@@ -1,7 +1,6 @@
 import { exec } from 'child_process'
 import keypress from 'keypress'
 import chalk from 'chalk'
-
 import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
 
 const LIST_HEIGHT = 40
@@ -44,6 +43,7 @@ async function initItems(): Promise<string[]> {
 }
 
 async function main() {
+    console.log()
     let items = await initItems()
     hideCursor()
     let menu = tableMenu({
@@ -61,12 +61,8 @@ async function main() {
         }
     })
     listenKeyboard((ch, key) => {
-        if (ch == 'u') {
-            // Convert items to uppercase
-            items = items.map(i => i.toUpperCase())
-            menu.update({ items })
-        } else if (ch == 'd') {
-            // Delete selected item
+        if (ch == 'd') {
+            // Example: delete selected item
             items.splice(menu.selection, 1)
             menu.update({ items })
         } else menu.keyHandler(ch, key)
