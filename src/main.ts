@@ -4,6 +4,9 @@ import chalk from 'chalk'
 
 import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
 
+const LIST_HEIGHT = 40
+const LIST_WIDTH = 80
+
 function listenKeyboard(kbHandler) {
     process.stdin.setRawMode(true)
     process.stdin.resume()
@@ -21,7 +24,10 @@ function menuDone(selection, items) {
 }
 
 function parseHistory(stdout) {
-    return stdout.split('\n').filter(l => l.trim().length > 0)
+    return stdout
+        .split('\n') // Slit lines
+        .map(l => l.split(';')[1] || '') // Command starts after ";"
+        .filter(l => l.trim().length > 0) // Discard empty lines
 }
 
 async function initItems(): Promise<string[]> {
@@ -43,10 +49,10 @@ async function main() {
     hideCursor()
     let menu = tableMenu({
         items,
-        height: 20,
+        height: LIST_HEIGHT,
         columns: 1,
-        columnWidth: 40,
-        scrollBarCol: 41,
+        columnWidth: LIST_WIDTH,
+        scrollBarCol: LIST_WIDTH + 1,
         done: sel => menuDone(sel, items),
         colors: {
             item: chalk.bgBlue,
