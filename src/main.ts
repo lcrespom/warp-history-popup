@@ -1,3 +1,4 @@
+import { exec } from 'child_process'
 import keypress from 'keypress'
 import chalk from 'chalk'
 
@@ -12,23 +13,26 @@ function listenKeyboard(kbHandler) {
     })
 }
 
-function menuDone(selection) {
+function menuDone(selection, items) {
     process.stdout.clearScreenDown()
     console.log('Selection: ' + selection + ' - ' + items[selection])
     showCursor()
     process.exit(0)
 }
 
-let items = []
-
-function initItems(rows) {
-    let result = []
-    for (let row = 1; row <= rows; row++) result.push(`Item ${row}`)
-    return result
+async function initItems(): Promise<string[]> {
+    let items = []
+    return new Promise((resolve, reject) => {
+        exec('ls', { shell: '/bin/zsh' }, (err, stdout, stderr) => {
+            console.log({ err, stdout, stderr })
+            if (err) reject(err)
+            else resolve(stdout.split('\n').filter(l => l.trim().length > 0))
+        })
+    })
 }
 
-function main() {
-    items = initItems(100)
+async function main() {
+    let items = await initItems()
     hideCursor()
     let menu = tableMenu({
         items,
@@ -36,7 +40,7 @@ function main() {
         columns: 1,
         columnWidth: 40,
         scrollBarCol: 41,
-        done: menuDone,
+        done: sel => menuDone(sel, items),
         colors: {
             item: chalk.bgBlue,
             scrollArea: chalk.bgBlue,
