@@ -1,5 +1,6 @@
 import { GlobalKeyboardListener, IGlobalKeyListener } from 'node-global-key-listener'
 import { IGlobalKeyEvent, IGlobalKeyDownMap } from 'node-global-key-listener'
+import { windowManager } from 'node-window-manager'
 
 type Modifier =
     | 'LEFT META'
@@ -35,6 +36,8 @@ function isHotkey(hotkey: Hotkey, key: IGlobalKeyEvent, down: IGlobalKeyDownMap)
         return false
     }
     if (!hotkey.repeatOK && hotkey.alreadyPressed) return false
+    let winTitle = windowManager.getActiveWindow().getTitle()
+    if (winTitle != 'Warp') return
     hotkey.alreadyPressed = true
     return true
 }
