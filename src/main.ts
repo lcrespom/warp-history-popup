@@ -4,6 +4,7 @@ import { showHistoryMenu } from './history'
 import { windowManager } from 'node-window-manager'
 
 const TYPE_INITIAL_WAIT = 100
+const SELF_COMMAND = './node_modules/.bin/esno src/main.ts'
 
 function makeWarpHotkey(keyName: string, command: string): Hotkey {
     return {
@@ -41,7 +42,7 @@ async function main() {
             break
         default:
             robot.setKeyboardDelay(10)
-            registerHotkeys('./node_modules/.bin/esno src/main.ts')
+            registerHotkeys(SELF_COMMAND)
     }
 }
 
