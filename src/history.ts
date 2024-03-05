@@ -17,8 +17,9 @@ function listenKeyboard(kbHandler) {
 
 function menuDone(selection, items) {
     process.stdout.clearScreenDown()
-    console.log('Selection: ' + selection + ' - ' + items[selection])
     showCursor()
+    console.clear()
+    console.log('Selection: ' + selection + ' - ' + items[selection])
     process.exit(0)
 }
 

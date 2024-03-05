@@ -50,7 +50,8 @@ function isHotkey(hotkey: Hotkey, key: IGlobalKeyEvent, down: IGlobalKeyDownMap)
 
 function allKeysUp(key: IGlobalKeyEvent, down: IGlobalKeyDownMap): boolean {
     if (key.state != 'UP') return false
-    for (let k of Object.keys(down)) if (down[k]) return false
+    let keys = Object.keys(down).filter(k => k != 'RETURN' && k != 'ESCAPE')
+    for (let k of keys) if (down[k]) return false
     return true
 }
 
