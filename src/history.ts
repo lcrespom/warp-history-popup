@@ -22,16 +22,21 @@ function menuDone(selection, items) {
     process.exit(0)
 }
 
+function removeStrangePrefixes(line) {
+    if (!line.startsWith(':')) return line
+    return line.split(';')[1] || ''
+}
+
 function parseHistory(stdout) {
     return stdout
         .split('\n') // Slit lines
-        .map(l => l.split(';')[1] || '') // Command starts after ";"
+        .map(removeStrangePrefixes) // Command starts after ";"
         .filter(l => l.trim().length > 0) // Discard empty lines
 }
 
 async function initItems(): Promise<string[]> {
     return new Promise((resolve, reject) => {
-        exec('tail -50 ~/.zsh_history', (err, stdout) => {
+        exec('tail -200 ~/.zsh_history', (err, stdout) => {
             if (err) reject(err)
             else resolve(parseHistory(stdout))
         })
