@@ -28,8 +28,8 @@ function makeWarpHotkey(keyName: string, modifiers: Modifier[], command: string)
 }
 
 function registerHotkeys(command: string) {
-    registerHotkey(makeWarpHotkey('PAGE UP', [], command + ' history'))
-    registerHotkey(makeWarpHotkey('PAGE DOWN', [], command + ' dirHistory'))
+    registerHotkey(makeWarpHotkey('PAGE UP', ['LEFT META'], command + ' history'))
+    registerHotkey(makeWarpHotkey('PAGE DOWN', ['LEFT META'], command + ' dirHistory'))
     registerHotkey(makeWarpHotkey('UP ARROW', CTRL_ALT, command + ' history'))
     registerHotkey(makeWarpHotkey('DOWN ARROW', CTRL_ALT, command + ' dirHistory'))
 }
@@ -61,7 +61,7 @@ function openServerSocket() {
 }
 
 async function main() {
-    robot.setKeyboardDelay(10)
+    robot.setKeyboardDelay(20)
     registerHotkeys(SELF_COMMAND)
     openServerSocket()
 }
