@@ -109,6 +109,7 @@ async function showHistoryMenu() {
     listenKeyboard((ch, key) => {
         process.stdout.write('\n\n')
         if (ch && ch >= ' ') {
+            // Edit line and filter items according to line
             if (key.name == 'backspace') line = line.slice(0, -1)
             else line += ch
             items = filterItems(initialItems, line)
@@ -120,6 +121,7 @@ async function showHistoryMenu() {
                 process.stdout.clearScreenDown()
             }
         } else {
+            // Send key to menu to handle navigation
             menu.keyHandler(ch, key)
         }
         cursorUp(2)
