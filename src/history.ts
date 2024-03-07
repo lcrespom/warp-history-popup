@@ -1,5 +1,7 @@
 import { exec } from 'node:child_process'
 import net from 'node:net'
+
+import chalk from 'chalk'
 import keypress from 'keypress'
 import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
 
@@ -72,7 +74,13 @@ async function showHistoryMenu() {
         columnWidth: LIST_WIDTH,
         scrollBarCol: LIST_WIDTH + 1,
         selection: items.length - 1,
-        done: sel => menuDone(sel, items)
+        done: sel => menuDone(sel, items),
+        colors: {
+            item: chalk.bgBlue,
+            scrollArea: chalk.bgBlue,
+            scrollBar: chalk.yellowBright.bgBlue,
+            desc: chalk.white.bgMagenta
+        }
     })
     listenKeyboard((ch, key) => {
         if (ch == 'd') {
