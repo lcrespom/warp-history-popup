@@ -30,7 +30,6 @@ async function sendMessageToDaemon(text: string) {
 }
 
 async function menuDone(selection, items) {
-    process.stdout.clearScreenDown()
     if (selection >= 0) await sendMessageToDaemon(items[selection])
     process.exit(0)
 }
@@ -122,6 +121,7 @@ async function showHistoryMenu() {
             }
         } else {
             // Send key to menu to handle navigation
+            if (key.name == 'return') line = ''
             menu.keyHandler(ch, key)
         }
         cursorUp(2)

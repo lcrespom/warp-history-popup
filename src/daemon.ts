@@ -27,6 +27,14 @@ function makeWarpHotkey(keyName: string, modifiers: Modifier[], command: string)
     }
 }
 
+async function typeStringSlow(txt: string) {
+    let chunkLen = 8
+    for (let i = 0; i < txt.length; i += chunkLen) {
+        await new Promise(resolve => setTimeout(resolve, 50))
+        robot.typeString(txt.substring(i, i + chunkLen))
+    }
+}
+
 function registerHotkeys(command: string) {
     registerHotkey(makeWarpHotkey('PAGE UP', ['LEFT META'], command + ' history'))
     registerHotkey(makeWarpHotkey('PAGE DOWN', ['LEFT META'], command + ' dirHistory'))
@@ -39,7 +47,7 @@ function processSocketRequest(data: string) {
     let msg = JSON.parse(data)
     switch (msg.command) {
         case 'type':
-            robot.typeString(msg.text)
+            typeStringSlow(msg.text)
             break
         default:
             console.log('Invalid command:', msg.command)
