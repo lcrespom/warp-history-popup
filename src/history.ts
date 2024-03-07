@@ -43,7 +43,7 @@ async function initItems(): Promise<string[]> {
     })
 }
 
-export async function showHistoryMenu() {
+async function showHistoryMenu() {
     console.log()
     let items = await initItems()
     hideCursor()
@@ -69,3 +69,5 @@ export async function showHistoryMenu() {
         } else menu.keyHandler(ch, key)
     })
 }
+
+showHistoryMenu()

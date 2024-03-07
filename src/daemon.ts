@@ -1,10 +1,9 @@
 import robot from 'robotjs'
-import { Hotkey, registerHotkey } from './hotkey'
-import { showHistoryMenu } from './history'
+import { Hotkey, registerHotkey } from './lib/hotkey'
 import { windowManager } from 'node-window-manager'
 
 const TYPE_INITIAL_WAIT = 100
-const SELF_COMMAND = ' ./node_modules/.bin/esno src/main.ts'
+const SELF_COMMAND = ' ./node_modules/.bin/esno src/history.ts'
 
 function makeWarpHotkey(keyName: string, command: string): Hotkey {
     return {
@@ -32,18 +31,8 @@ function registerHotkeys(command: string) {
 }
 
 async function main() {
-    switch (process.argv[process.argv.length - 1]) {
-        case 'history':
-            showHistoryMenu()
-            break
-        case 'dirHistory':
-            console.log('ToDo: dir history')
-            process.exit(1)
-            break
-        default:
-            robot.setKeyboardDelay(10)
-            registerHotkeys(SELF_COMMAND)
-    }
+    robot.setKeyboardDelay(10)
+    registerHotkeys(SELF_COMMAND)
 }
 
 main()

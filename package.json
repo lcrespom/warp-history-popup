@@ -4,7 +4,7 @@
     "description": "Terminal history management",
     "main": "index.js",
     "scripts": {
-        "start": "esno src/main.ts",
+        "start": "esno src/daemon.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
