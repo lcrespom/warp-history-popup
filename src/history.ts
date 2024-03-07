@@ -73,7 +73,8 @@ function writeLine(line: string) {
 
 function filterItems(items: string[], search: string) {
     if (!search) return items
-    return items.filter(i => i.includes(search))
+    let searchLLC = search.toLocaleLowerCase()
+    return items.filter(i => i.toLocaleLowerCase().includes(searchLLC))
 }
 
 async function showHistoryMenu() {
@@ -108,10 +109,10 @@ async function showHistoryMenu() {
                 let height = Math.min(LIST_HEIGHT, items.length)
                 let selection = items.length - 1
                 menu.update({ items, selection, height, scrollStart: 0 })
-                cursorUp(2)
             } else {
                 process.stdout.clearScreenDown()
             }
+            cursorUp(2)
             writeLine(line)
         } else {
             process.stdout.write('\n\n')
