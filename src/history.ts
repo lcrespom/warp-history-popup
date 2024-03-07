@@ -29,11 +29,6 @@ async function sendMessageToDaemon(text: string) {
     })
 }
 
-async function menuDone(selection, items) {
-    if (selection >= 0) await sendMessageToDaemon(items[selection])
-    process.exit(0)
-}
-
 function removeStrangePrefixes(line: string) {
     if (!line.startsWith(':')) return line
     return line.split(';')[1] || ''
@@ -59,10 +54,6 @@ async function initItems(): Promise<string[]> {
             else resolve(parseHistory(stdout))
         })
     })
-}
-
-function clearScreen() {
-    process.stdout.write('\x1B[2J\x1B[H')
 }
 
 function cursorUp(n: number) {
@@ -98,12 +89,20 @@ function createMenu(items: string[], done) {
 }
 
 async function showHistoryMenu() {
-    clearScreen()
     let line = ''
-    process.stdout.write('\n\n')
     let initialItems = await initItems()
     let items = initialItems
-    let menu = createMenu(initialItems, sel => menuDone(sel, items))
+    let done = false
+
+    process.stdout.write('\n\n')
+    let menu = createMenu(initialItems, async selection => {
+        done = true
+        line = ''
+        cursorUp(2)
+        writeLine(line)
+        if (selection >= 0) await sendMessageToDaemon(items[selection])
+        process.exit(0)
+    })
     cursorUp(2)
     listenKeyboard((ch, key) => {
         process.stdout.write('\n\n')
@@ -121,11 +120,12 @@ async function showHistoryMenu() {
             }
         } else {
             // Send key to menu to handle navigation
-            if (key.name == 'return') line = ''
             menu.keyHandler(ch, key)
         }
-        cursorUp(2)
-        writeLine(line)
+        if (!done) {
+            cursorUp(2)
+            writeLine(line)
+        }
     })
 }
 
