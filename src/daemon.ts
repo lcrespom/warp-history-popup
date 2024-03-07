@@ -1,17 +1,18 @@
 import net from 'node:net'
 import fs from 'node:fs'
 import robot from 'robotjs'
-import { Hotkey, registerHotkey } from './lib/hotkey'
+import { Hotkey, registerHotkey, Modifier } from './lib/hotkey'
 import { windowManager } from 'node-window-manager'
 
 const TYPE_INITIAL_WAIT = 100
 const SELF_COMMAND = ' ./node_modules/.bin/esno src/history.ts'
 const SOCKET_PATH = '/tmp/history-server-socket'
+const CTRL_ALT: Modifier[] = ['LEFT CTRL', 'LEFT ALT']
 
-function makeWarpHotkey(keyName: string, command: string): Hotkey {
+function makeWarpHotkey(keyName: string, modifiers: Modifier[], command: string): Hotkey {
     return {
         key: keyName,
-        modifiers: ['LEFT CTRL', 'LEFT ALT'],
+        modifiers,
         triggerOnKeyUp: true,
         callback: () => {
             let winTitle = windowManager.getActiveWindow().getTitle()
@@ -27,10 +28,10 @@ function makeWarpHotkey(keyName: string, command: string): Hotkey {
 }
 
 function registerHotkeys(command: string) {
-    // registerHotkey(makeWarpHotkey('PAGE UP', command + ' history'))
-    // registerHotkey(makeWarpHotkey('PAGE DOWN', command + ' dirHistory'))
-    registerHotkey(makeWarpHotkey('UP ARROW', command + ' history'))
-    registerHotkey(makeWarpHotkey('DOWN ARROW', command + ' dirHistory'))
+    registerHotkey(makeWarpHotkey('PAGE UP', [], command + ' history'))
+    registerHotkey(makeWarpHotkey('PAGE DOWN', [], command + ' dirHistory'))
+    registerHotkey(makeWarpHotkey('UP ARROW', CTRL_ALT, command + ' history'))
+    registerHotkey(makeWarpHotkey('DOWN ARROW', CTRL_ALT, command + ' dirHistory'))
 }
 
 function processSocketRequest(data: string) {
