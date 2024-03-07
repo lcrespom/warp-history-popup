@@ -3,7 +3,7 @@ import net from 'node:net'
 
 import chalk from 'chalk'
 import keypress from 'keypress'
-import { showCursor, tableMenu } from 'node-terminal-menu'
+import { tableMenu } from 'node-terminal-menu'
 
 const LIST_HEIGHT = 40
 const LIST_WIDTH = 80
@@ -31,7 +31,6 @@ async function sendMessageToDaemon(text: string) {
 
 async function menuDone(selection, items) {
     process.stdout.clearScreenDown()
-    showCursor()
     if (selection >= 0) await sendMessageToDaemon(items[selection])
     process.exit(0)
 }
@@ -63,6 +62,10 @@ async function initItems(): Promise<string[]> {
     })
 }
 
+function clearScreen() {
+    process.stdout.write('\x1B[2J\x1B[H')
+}
+
 function cursorUp(n: number) {
     process.stdout.write(`\x1B[${n}A`)
 }
@@ -77,19 +80,15 @@ function filterItems(items: string[], search: string) {
     return items.filter(i => i.toLocaleLowerCase().includes(searchLLC))
 }
 
-async function showHistoryMenu() {
-    let line = ''
-    process.stdout.write('\n\n')
-    let initialItems = await initItems()
-    let items = initialItems
-    let menu = tableMenu({
+function createMenu(items: string[], done) {
+    return tableMenu({
         items,
         height: LIST_HEIGHT,
         columns: 1,
         columnWidth: LIST_WIDTH,
         scrollBarCol: LIST_WIDTH + 1,
         selection: items.length - 1,
-        done: sel => menuDone(sel, items),
+        done,
         colors: {
             item: chalk.bgBlue,
             scrollArea: chalk.bgBlue,
@@ -97,12 +96,21 @@ async function showHistoryMenu() {
             desc: chalk.white.bgMagenta
         }
     })
+}
+
+async function showHistoryMenu() {
+    clearScreen()
+    let line = ''
+    process.stdout.write('\n\n')
+    let initialItems = await initItems()
+    let items = initialItems
+    let menu = createMenu(initialItems, sel => menuDone(sel, items))
     cursorUp(2)
     listenKeyboard((ch, key) => {
+        process.stdout.write('\n\n')
         if (ch && ch >= ' ') {
             if (key.name == 'backspace') line = line.slice(0, -1)
             else line += ch
-            process.stdout.write('\n\n')
             items = filterItems(initialItems, line)
             if (items.length > 0) {
                 let height = Math.min(LIST_HEIGHT, items.length)
@@ -111,14 +119,11 @@ async function showHistoryMenu() {
             } else {
                 process.stdout.clearScreenDown()
             }
-            cursorUp(2)
-            writeLine(line)
         } else {
-            process.stdout.write('\n\n')
             menu.keyHandler(ch, key)
-            cursorUp(2)
-            writeLine(line)
         }
+        cursorUp(2)
+        writeLine(line)
     })
 }
 

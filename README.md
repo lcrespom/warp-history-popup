@@ -4,7 +4,9 @@
 -   [x] Support a domain socket to accept external robot typing requests
 -   [x] Filter duplicates, show most recents
 -   [x] Filter items as user types
--   [ ] Capture initial text and filter according to it
+-   [ ] Split long text in smaller chunks to ensure robotjs works
+-   [ ] Special key to add \n at end of selected line (e.g. shift+return)
+-   [ ] Capture initial text and filter according to it (emit ctrl+a - ctrl+x, get clipboard)
 -   [ ] Directory history support
 -   [ ] Read hotkeys and associated scripts from a config.json file
 -   [ ] Usage documentation
