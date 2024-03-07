@@ -71,10 +71,16 @@ function writeLine(line: string) {
     process.stdout.write('\x1B[0G\x1B[K' + line)
 }
 
+function filterItems(items: string[], search: string) {
+    if (!search) return items
+    return items.filter(i => i.includes(search))
+}
+
 async function showHistoryMenu() {
     let line = ''
     process.stdout.write('\n\n')
-    let items = await initItems()
+    let initialItems = await initItems()
+    let items = initialItems
     //hideCursor()
     let menu = tableMenu({
         items,
@@ -96,6 +102,16 @@ async function showHistoryMenu() {
         if (ch && ch >= ' ') {
             if (key.name == 'backspace') line = line.slice(0, -1)
             else line += ch
+            process.stdout.write('\n\n')
+            items = filterItems(initialItems, line)
+            if (items.length > 0) {
+                let height = Math.min(LIST_HEIGHT, items.length)
+                let selection = items.length - 1
+                menu.update({ items, selection, height, scrollStart: 0 })
+                cursorUp(2)
+            } else {
+                process.stdout.clearScreenDown()
+            }
             writeLine(line)
         } else {
             process.stdout.write('\n\n')
