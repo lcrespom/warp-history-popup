@@ -35,6 +35,14 @@ function registerHotkeys(command: string) {
 
 function processSocketRequest(data: string) {
     console.log('Message from client: ', data)
+    let msg = JSON.parse(data)
+    switch (msg.command) {
+        case 'type':
+            robot.typeString(msg.text)
+            break
+        default:
+            console.log('Invalid command:', msg.command)
+    }
 }
 
 function openServerSocket() {

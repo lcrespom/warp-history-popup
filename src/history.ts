@@ -19,7 +19,7 @@ function listenKeyboard(kbHandler) {
 }
 
 async function sendMessageToDaemon(text: string) {
-    let json = JSON.stringify({ command: 'runcmd', text })
+    let json = JSON.stringify({ command: 'type', text })
     return new Promise<void>(resolve => {
         const client = net.connect({ path: SOCKET_PATH }, () => {
             client.write(json)
