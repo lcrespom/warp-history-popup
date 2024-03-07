@@ -63,10 +63,19 @@ async function initItems(): Promise<string[]> {
     })
 }
 
+function cursorUp() {
+    process.stdout.write('\x1B[A')
+}
+
+function writeLine(line: string) {
+    process.stdout.write('\x1B[0G\x1B[K' + line)
+}
+
 async function showHistoryMenu() {
+    let line = ''
     console.log()
     let items = await initItems()
-    hideCursor()
+    //hideCursor()
     let menu = tableMenu({
         items,
         height: LIST_HEIGHT,
@@ -82,12 +91,17 @@ async function showHistoryMenu() {
             desc: chalk.white.bgMagenta
         }
     })
+    cursorUp()
     listenKeyboard((ch, key) => {
-        if (ch == 'd') {
-            // Example: delete selected item
-            items.splice(menu.selection, 1)
-            menu.update({ items })
-        } else menu.keyHandler(ch, key)
+        if (ch && ch >= ' ') {
+            line += ch
+            writeLine(line)
+        } else {
+            process.stdout.write('\n')
+            menu.keyHandler(ch, key)
+            cursorUp()
+            writeLine(line)
+        }
     })
 }
 
