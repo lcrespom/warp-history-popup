@@ -61,7 +61,7 @@ function openServerSocket() {
 }
 
 async function main() {
-    robot.setKeyboardDelay(20)
+    robot.setKeyboardDelay(50)
     registerHotkeys(SELF_COMMAND)
     openServerSocket()
 }
