@@ -53,6 +53,7 @@ async function showHistoryMenu() {
         columns: 1,
         columnWidth: LIST_WIDTH,
         scrollBarCol: LIST_WIDTH + 1,
+        selection: items.length - 1,
         done: sel => menuDone(sel, items),
         colors: {
             item: chalk.bgBlue,
