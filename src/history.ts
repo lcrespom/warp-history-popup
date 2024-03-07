@@ -63,8 +63,8 @@ async function initItems(): Promise<string[]> {
     })
 }
 
-function cursorUp() {
-    process.stdout.write('\x1B[A')
+function cursorUp(n: number) {
+    process.stdout.write(`\x1B[${n}A`)
 }
 
 function writeLine(line: string) {
@@ -73,7 +73,7 @@ function writeLine(line: string) {
 
 async function showHistoryMenu() {
     let line = ''
-    console.log()
+    process.stdout.write('\n\n')
     let items = await initItems()
     //hideCursor()
     let menu = tableMenu({
@@ -91,15 +91,16 @@ async function showHistoryMenu() {
             desc: chalk.white.bgMagenta
         }
     })
-    cursorUp()
+    cursorUp(2)
     listenKeyboard((ch, key) => {
         if (ch && ch >= ' ') {
-            line += ch
+            if (key.name == 'backspace') line = line.slice(0, -1)
+            else line += ch
             writeLine(line)
         } else {
-            process.stdout.write('\n')
+            process.stdout.write('\n\n')
             menu.keyHandler(ch, key)
-            cursorUp()
+            cursorUp(2)
             writeLine(line)
         }
     })
