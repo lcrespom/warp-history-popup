@@ -1,10 +1,13 @@
-import { exec } from 'child_process'
+import { exec } from 'node:child_process'
+import net from 'node:net'
+
 import keypress from 'keypress'
 import chalk from 'chalk'
 import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
 
 const LIST_HEIGHT = 40
 const LIST_WIDTH = 80
+const SOCKET_PATH = '/tmp/history-server-socket'
 
 function listenKeyboard(kbHandler) {
     process.stdin.setRawMode(true)
@@ -15,10 +18,21 @@ function listenKeyboard(kbHandler) {
     })
 }
 
-function menuDone(selection, items) {
+async function sendMessageToDaemon(text: string) {
+    let json = JSON.stringify({ command: 'runcmd', text })
+    return new Promise<void>(resolve => {
+        const client = net.connect({ path: SOCKET_PATH }, () => {
+            client.write(json)
+            client.end()
+            resolve()
+        })
+    })
+}
+
+async function menuDone(selection, items) {
     process.stdout.clearScreenDown()
     showCursor()
-    console.log('Selection: ' + selection + ' - ' + items[selection])
+    if (selection >= 0) await sendMessageToDaemon(items[selection])
     process.exit(0)
 }
 
