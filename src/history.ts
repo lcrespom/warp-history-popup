@@ -3,7 +3,7 @@ import net from 'node:net'
 
 import chalk from 'chalk'
 import keypress from 'keypress'
-import { hideCursor, showCursor, tableMenu } from 'node-terminal-menu'
+import { showCursor, tableMenu } from 'node-terminal-menu'
 
 const LIST_HEIGHT = 40
 const LIST_WIDTH = 80
@@ -82,7 +82,6 @@ async function showHistoryMenu() {
     process.stdout.write('\n\n')
     let initialItems = await initItems()
     let items = initialItems
-    //hideCursor()
     let menu = tableMenu({
         items,
         height: LIST_HEIGHT,
